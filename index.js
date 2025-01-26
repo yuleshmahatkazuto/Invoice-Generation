@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import path from "path";
 import { fileURLToPath } from 'url';
+import axios from 'axios';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -11,7 +12,7 @@ const __dirname = path.dirname(__filename);
 const clientId = "753345";
 const clientSecret = "c5c685a22e55484bafc32256f124d11b"
 const authURL = "https://go.servicem8.com/oauth/authorize";
-const redirectUri = "http://localhost:3000/callback";
+const redirectUri = "https://invoice-generation-uykq.onrender.com/callback";
 
 app.use(bodyParser.urlencoded({ extended: true}));
 // app.use(express.static("public"));
@@ -30,6 +31,30 @@ app.get("/auth", (req, res) => {
 
 app.get("/callback", async(req, res) => {
   const authorizationCode = req.query.code;
+
+  if(!authorizationCode){
+    return res.status(400).send("Authorization code not provided by Servicem8");
+  }
+
+  try{
+    const response = await axios.post(`https://api.servicem8.com/oauth/access_token`,{
+      client_id: clientId,
+      client_secret: clientSecret,
+      code: authorizationCode,
+      redirect_uri: redirectUri,
+      grant_type: "authorization_code"
+    });
+
+    const {access_token, expires_in, refresh_token} = response.data;
+    console.log ("Access token" + access_token);
+    console.log ("expires_in" + expires_in);
+    console.log("refresh_token" + refresh_token);
+    res.send("Authentication successful! Tokens recieved. Hippie!!!");
+  }
+  catch(error){
+    res.send("An error occured!");
+  }
+
 });
 
 app.listen(port, () => {
