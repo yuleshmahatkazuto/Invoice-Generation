@@ -1,4 +1,4 @@
-import express from "express";
+import express, { response } from "express";
 import bodyParser from "body-parser";
 import path from "path";
 import { fileURLToPath } from 'url';
@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 const clientId = "753345";
 const clientSecret = "c5c685a22e55484bafc32256f124d11b"
 const authURL = "https://go.servicem8.com/oauth/authorize";
-const redirectUri = "https://321c-2405-dc00-ecbc-713f-f15c-13bb-e4a6-ca4f.ngrok-free.app/callback";
+const redirectUri = "https://fe52-122-105-230-29.ngrok-free.app/callback";
 let access_token, expires_in, refresh_token;
 
 app.use(bodyParser.urlencoded({ extended: true}));
@@ -54,7 +54,8 @@ app.get("/callback", async(req, res) => {
     console.log ("Access token " + access_token);
     console.log ("expires_in " + expires_in);
     console.log("refresh_token " + refresh_token);
-    res.send("Authentication successful! Tokens recieved. Hippie!!!")
+    res.send(`Authentication successful! Tokens recieved. Hippie!!!
+      <a href="/jobs"> Get jobs </a>`);
   }
   catch(error){
     res.send("An error occured!");
@@ -62,23 +63,32 @@ app.get("/callback", async(req, res) => {
 
 });
 
-console.log(access_token);
+
+app.get("/jobs", async(req, res) => {
+  if(!access_token){
+    res.send("Access token not available yet");
+  }else{
+    try{
+      console.log(access_token);
+      const response = await axios.get("https://api.servicem8.com/api_1.0/Job.json", {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        } 
+    });
+  
+      console.log(response.data);
+      res.send(response.data);
+  
+    }catch(error){
+      console.error("Error fetching job details:", error.response?.data || error.message);
+    }
+  }
+});
 
 //function to retrieve job details using job endpoint of servicem8
 async function getJobDetails(access_token){
-  // console.log(access_token);
-  try{
-    const response = await axios.get("https://api.servicem8.com/api_1.0/job.json", {
-      headers: {
-        Authorization : `Bearer ${access_token}`,
-      }
-    });
-
-    console.log(response.data);
-
-  }catch(error){
-    console.error("Error fetching job details!");
-  }
+  
+  
 }
 
 getJobDetails(access_token);
