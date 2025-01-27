@@ -5,14 +5,14 @@ import { fileURLToPath } from 'url';
 import axios from 'axios';
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const clientId = "753345";
 const clientSecret = "c5c685a22e55484bafc32256f124d11b"
 const authURL = "https://go.servicem8.com/oauth/authorize";
-const redirectUri = "https://invoice-generation-uykq.onrender.com/callback";
+const redirectUri = "https://321c-2405-dc00-ecbc-713f-f15c-13bb-e4a6-ca4f.ngrok-free.app/callback";
 let access_token, expires_in, refresh_token;
 
 app.use(bodyParser.urlencoded({ extended: true}));
@@ -62,11 +62,13 @@ app.get("/callback", async(req, res) => {
 
 });
 
+console.log(access_token);
 
 //function to retrieve job details using job endpoint of servicem8
 async function getJobDetails(access_token){
+  // console.log(access_token);
   try{
-    const response = await axios.get("https://api.servicem8.com/api_1.0/Job.json", {
+    const response = await axios.get("https://api.servicem8.com/api_1.0/job.json", {
       headers: {
         Authorization : `Bearer ${access_token}`,
       }
@@ -79,6 +81,8 @@ async function getJobDetails(access_token){
   }
 }
 
+getJobDetails(access_token);
+
 app.listen(port, () => {
   console.log(`Your server is running in port ${port}`);
-})
+});
