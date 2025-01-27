@@ -13,13 +13,18 @@ const clientId = "753345";
 const clientSecret = "c5c685a22e55484bafc32256f124d11b"
 const authURL = "https://go.servicem8.com/oauth/authorize";
 const redirectUri = "https://invoice-generation-uykq.onrender.com/callback";
+let access_token, expires_in, refresh_token;
 
 app.use(bodyParser.urlencoded({ extended: true}));
 // app.use(express.static("public"));
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
-})
+});
+
+app.get("/activate-addon", (req, res) => {
+  res.send("Congratulations, your addon is now activated!!!");
+});
 
 
 
@@ -45,17 +50,34 @@ app.get("/callback", async(req, res) => {
       grant_type: "authorization_code"
     });
 
-    const {access_token, expires_in, refresh_token} = response.data;
-    console.log ("Access token" + access_token);
-    console.log ("expires_in" + expires_in);
-    console.log("refresh_token" + refresh_token);
-    res.send("Authentication successful! Tokens recieved. Hippie!!!");
+    ({access_token, expires_in, refresh_token} = response.data);
+    console.log ("Access token " + access_token);
+    console.log ("expires_in " + expires_in);
+    console.log("refresh_token " + refresh_token);
+    res.send("Authentication successful! Tokens recieved. Hippie!!!")
   }
   catch(error){
     res.send("An error occured!");
   }
 
 });
+
+
+//function to retrieve job details using job endpoint of servicem8
+async function getJobDetails(access_token){
+  try{
+    const response = await axios.get("https://api.servicem8.com/api_1.0/Job.json", {
+      headers: {
+        Authorization : `Bearer ${access_token}`,
+      }
+    });
+
+    console.log(response.data);
+
+  }catch(error){
+    console.error("Error fetching job details!");
+  }
+}
 
 app.listen(port, () => {
   console.log(`Your server is running in port ${port}`);
