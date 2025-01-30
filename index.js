@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 const clientId = "753345";
 const clientSecret = "c5c685a22e55484bafc32256f124d11b"
 const authURL = "https://go.servicem8.com/oauth/authorize";
-const redirectUri = "https://2dfc-122-105-231-136.ngrok-free.app/callback";
+const redirectUri = "https://2e98-122-105-231-252.ngrok-free.app/callback";
 const my_UUID = '1516b609-0860-4921-a15a-2027953c8f3b';
 let access_token, expires_in, refresh_token;
 
@@ -28,7 +28,7 @@ app.get("/activate-addon", (req, res) => {
 });
 
 app.get("/auth", (req, res) => {
-  const params = `?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=manage_jobs%20manage_job_contacts`;
+  const params = `?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=manage_jobs%20read_job_contacts`;
   res.redirect(authURL + params);
 });
 
@@ -64,20 +64,32 @@ app.get("/jobs", async(req, res) => {
   }else{
     try{
       console.log(access_token);
-      const response = await axios.get("https://api.servicem8.com/api_1.0/Job.json", {
+      const jobresponse = await axios.get("https://api.servicem8.com/api_1.0/Job.json", {
         headers: {
           Authorization: `Bearer ${access_token}`,
         },
         params: {
           $filter: "completion_date gt '2025-01-19 00:00:00'",
         } 
-    });
-      const jobs = response.data;
+      });
+      const companyResponse = await axios.get("https://api.servicem8.com/api_1.0/JobContact.json",{
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+
+      const customerName = new Map();
+      companyResponse.data.forEach(customer => {
+        customerName.set(customer.job_uuid, customer.first + " " + customer.last);
+      });
+
+      const jobs = jobresponse.data;
       const jobsById = filterJobsByCompletionId(jobs);
       const jobsByDate = [];
-    
+      
       jobsById.forEach(job => {
         const date = job.completion_date.split(" ")[0];
+        const customer_Name = customerName.get(job.uuid) || "";
         let dateEntry = jobsByDate.find(entry => entry.date === date);
         if(!dateEntry){
           dateEntry = {date: date, jobs: []};
@@ -87,12 +99,12 @@ app.get("/jobs", async(req, res) => {
         dateEntry.jobs.push({
           jobID: job.generated_job_id,
           date: date,
-          customerName : "Customer Name",
+          customerName : customer_Name,
           jobAddress: job.geo_city,
           labourCharge: "Labour Charge",
           paymentMethod: job.payment_method,
         });
-
+        console.log(jobsByDate[5]);
       });
       
       //helper function to filter the response.data using my uuid.
@@ -104,8 +116,6 @@ app.get("/jobs", async(req, res) => {
         });
         return jobsById;
       }
-
-      console.log(jobsByDate);
       res.render(path.join(__dirname, "views/invoice.ejs"), {jobs: jobsByDate});
     }catch(error){
       console.error("Error fetching job details:", error.response?.data || error.message);
