@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice</title>
+  <style>
+    tr, th, td {
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  <% if(locals.jobs){ %>
+    <div class="invoice-header">
+      <h1>Invoice Header</h1>
+    </div>
+
+    <div class="invoice-details">
+      <table>
+        <tr>
+          <th>Job ID</th>
+          <th>Date</th>
+          <th>Customer</th>
+          <th>Job Address</th>
+          <th>Labour Charge($AUD)</th>
+          <th>Payment</th>
+        </tr>
+
+        <% jobs.forEach(dateEntry => { %>
+          <% dateEntry.jobs.forEach(job => { %>
+            <tr>
+              <td><%= job.jobID %></td>
+              <td><%= job.date %></td>
+              <td><%= job.customerName %></td>
+              <td><%= job.jobAddress %></td>
+              <td><%= job.labourCharge %></td>
+              <td><%= job.paymentMethod %></td>
+            </tr>
+          <% }); %>
+        <% }); %>
+         
+      </table>
+    </div>
+  <% } %>
+</body>
+</html>

@@ -12,10 +12,9 @@ const __dirname = path.dirname(__filename);
 const clientId = "753345";
 const clientSecret = "c5c685a22e55484bafc32256f124d11b"
 const authURL = "https://go.servicem8.com/oauth/authorize";
-const redirectUri = "https://835b-122-105-231-214.ngrok-free.app/callback";
+const redirectUri = "https://2dfc-122-105-231-136.ngrok-free.app/callback";
 const my_UUID = '1516b609-0860-4921-a15a-2027953c8f3b';
 let access_token, expires_in, refresh_token;
-const jobsByDate = new Map();
 
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(express.static("public"));
@@ -81,14 +80,25 @@ app.get("/jobs", async(req, res) => {
     });
       const jobs = response.data;
       const jobsById = filterJobsByCompletionId(jobs);
-      console.log(jobsById.length);
+      const jobsByDate = [];
+    
       jobsById.forEach(job => {
         const date = job.completion_date.split(" ")[0];
-        if(!jobsByDate.has(date)){
-          jobsByDate.set(date, []);
+        let dateEntry = jobsByDate.find(entry => entry.date === date);
+        if(!dateEntry){
+          dateEntry = {date: date, jobs: []};
+          jobsByDate.push(dateEntry);
         }
 
-        jobsByDate.get(date).push(job);
+        dateEntry.jobs.push({
+          jobID: job.generated_job_id,
+          date: date,
+          customerName : "Customer Name",
+          jobAddress: job.geo_city,
+          labourCharge: "Labour Charge",
+          paymentMethod: job.payment_method,
+        });
+
       });
       
       //helper function to filter the response.data using my uuid.
@@ -103,7 +113,7 @@ app.get("/jobs", async(req, res) => {
 
       //helper function to filter the respon
       console.log(jobsByDate);
-      res.json(Object.fromEntries(jobsByDate));
+      res.render(path.join(__dirname, "views/invoice.ejs"), {jobs: jobsByDate});
     }catch(error){
       console.error("Error fetching job details:", error.response?.data || error.message);
     }
