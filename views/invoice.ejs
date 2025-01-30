@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice</title>
+</head>
+<body>
+  <% if(locals.jobDate && jobsArray){ %>
+
+    <% const iterator = jobMap.entries(); %>
+    <% let result = iterator.next(); %>
+    <div class="invoice-header">
+      <h1>Invoice Header</h1>
+    </div>
+
+    <div class="invoice-details">
+      <table>
+        <tr>
+          <th>Job ID</th>
+          <th>Date</th>
+          <th>Customer</th>
+          <th>Job Address</th>
+          <th>Labour Charge($AUD)</th>
+          <th>Payment</th>
+        </tr>
+
+        <% while(!result.done){ %>
+          <% let [jobDate, jobsArray] = result.value; %>
+          <% jobsArray.forEach(job => { %>
+            <tr>
+              <td><%= job.generated_job_id %></td>
+              <td><%= job.completion_date %></td>
+              <td>Customer Name PlaceHolder</td>
+              <td><%= job.geo_city %></td>
+              <td>Labour Charge Place Holder</td>
+              <td><%= job.payment_method %></td>
+            </tr>
+          <% }); %>
+          <% result = iterator.next(); %>
+        }
+      </table>
+    </div>
+  }
+</body>
+</html>

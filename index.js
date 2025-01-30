@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 const clientId = "753345";
 const clientSecret = "c5c685a22e55484bafc32256f124d11b"
 const authURL = "https://go.servicem8.com/oauth/authorize";
-const redirectUri = "https://835b-122-105-231-214.ngrok-free.app/callback";
+const redirectUri = "https://8582-122-105-231-136.ngrok-free.app/callback";
 const my_UUID = '1516b609-0860-4921-a15a-2027953c8f3b';
 let access_token, expires_in, refresh_token;
 const jobsByDate = new Map();
@@ -53,9 +53,6 @@ app.get("/callback", async(req, res) => {
     });
 
     ({access_token, expires_in, refresh_token} = response.data);
-    console.log ("Access token " + access_token);
-    console.log ("expires_in " + expires_in);
-    console.log("refresh_token " + refresh_token);
     res.send(`Authentication successful! Tokens recieved. Hippie!!!
       <a href="/jobs"> Get jobs </a>`);
   }
@@ -101,9 +98,9 @@ app.get("/jobs", async(req, res) => {
         return jobsById;
       }
 
-      //helper function to filter the respon
       console.log(jobsByDate);
-      res.json(Object.fromEntries(jobsByDate));
+      res.render(path.join(__dirname, "views/invoice.ejs"), {jobMap: jobsByDate});
+      // res.json(Object.fromEntries(jobsByDate));
     }catch(error){
       console.error("Error fetching job details:", error.response?.data || error.message);
     }
