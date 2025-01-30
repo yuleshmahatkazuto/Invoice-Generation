@@ -4,12 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Invoice</title>
+  <style>
+    tr, th, td {
+      border: 1px solid black;
+    }
+  </style>
 </head>
 <body>
-  <% if(locals.jobDate && jobsArray){ %>
-
-    <% const iterator = jobMap.entries(); %>
-    <% let result = iterator.next(); %>
+  <% if(locals.jobs){ %>
     <div class="invoice-header">
       <h1>Invoice Header</h1>
     </div>
@@ -25,22 +27,21 @@
           <th>Payment</th>
         </tr>
 
-        <% while(!result.done){ %>
-          <% let [jobDate, jobsArray] = result.value; %>
-          <% jobsArray.forEach(job => { %>
+        <% jobs.forEach(dateEntry => { %>
+          <% dateEntry.jobs.forEach(job => { %>
             <tr>
-              <td><%= job.generated_job_id %></td>
-              <td><%= job.completion_date %></td>
-              <td>Customer Name PlaceHolder</td>
-              <td><%= job.geo_city %></td>
-              <td>Labour Charge Place Holder</td>
-              <td><%= job.payment_method %></td>
+              <td><%= job.jobID %></td>
+              <td><%= job.date %></td>
+              <td><%= job.customerName %></td>
+              <td><%= job.jobAddress %></td>
+              <td><%= job.labourCharge %></td>
+              <td><%= job.paymentMethod %></td>
             </tr>
           <% }); %>
-          <% result = iterator.next(); %>
-        }
+        <% }); %>
+         
       </table>
     </div>
-  }
+  <% } %>
 </body>
 </html>
