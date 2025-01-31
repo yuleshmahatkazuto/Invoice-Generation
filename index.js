@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 const clientId = "753345";
 const clientSecret = "c5c685a22e55484bafc32256f124d11b"
 const authURL = "https://go.servicem8.com/oauth/authorize";
-const redirectUri = "https://2e98-122-105-231-252.ngrok-free.app/callback";
+const redirectUri = "https://e4b8-122-105-231-206.ngrok-free.app/callback";
 const my_UUID = '1516b609-0860-4921-a15a-2027953c8f3b';
 let access_token, expires_in, refresh_token;
 
@@ -49,8 +49,7 @@ app.get("/callback", async(req, res) => {
     });
 
     ({access_token, expires_in, refresh_token} = response.data);
-    res.send(`Authentication successful! Tokens recieved. Hippie!!!
-      <a href="/jobs"> Get jobs </a>`);
+    res.send("home.html");
   }
   catch(error){
     res.send("An error occured!");

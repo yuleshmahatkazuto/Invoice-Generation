@@ -1,0 +1,19 @@
+.container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;  
+}
+
+.button{
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px;
+}
+
+.button:hover{
+  background-color: rgba(0, 0, 0, 0.557);
+  border: 2px solid rgba(213, 124, 124, 0.557);
+}
