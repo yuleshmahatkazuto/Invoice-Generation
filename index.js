@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 const clientId = "753345";
 const clientSecret = "c5c685a22e55484bafc32256f124d11b"
 const authURL = "https://go.servicem8.com/oauth/authorize";
-const redirectUri = "https://a339-122-105-231-72.ngrok-free.app/callback";
+const redirectUri = "https://f31d-165-225-115-66.ngrok-free.app/callback";
 const my_UUID = '1516b609-0860-4921-a15a-2027953c8f3b';
 let access_token, expires_in, refresh_token;
 
@@ -80,12 +80,11 @@ app.post("/submit", (req, res) => {
 
 app.get("/jobs", async(req, res) => {
   let payMap = timeFormatConverter(arrayOfObjects);
-
+  console.log(payMap);
   if(!access_token){
     res.send("Access token not available yet");
   }else{
     try{
-      console.log(access_token);
       const jobresponse = await axios.get("https://api.servicem8.com/api_1.0/Job.json", {
         headers: {
           Authorization: `Bearer ${access_token}`,
@@ -117,13 +116,14 @@ app.get("/jobs", async(req, res) => {
           dateEntry = {date: date, jobs: []};
           jobsByDate.push(dateEntry);
         }
-
+        console.log(date);
+        console.log(payMap.get(date));
         dateEntry.jobs.push({
           jobID: job.generated_job_id,
           date: date,
           customerName : customer_Name,
           jobAddress: job.geo_city,
-          labourCharge: "Labour Charge",
+          labourCharge: payMap.get(date),
           paymentMethod: job.payment_method,
         });
       });
@@ -188,7 +188,7 @@ function timeFormatConverter(array){
         month = 12;
         break;
     }
-    let date = "2025-" + month.toString() + "-" + dateArr[1];
+    let date = "2025-" + month.toString().padStart(2, "0") + "-" + dateArr[1];
     datePayMap.set(date, day.pay);
   });
   return datePayMap;
