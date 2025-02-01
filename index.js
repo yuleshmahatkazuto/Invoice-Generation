@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import path from "path";
 import { fileURLToPath } from 'url';
 import axios from 'axios';
+import {timeExtractor, payCalculator, timeDiffCalculator, timeConverter} from "./payCalculator.js";
 
 const app = express();
 const port = 3000;
@@ -12,7 +13,7 @@ const __dirname = path.dirname(__filename);
 const clientId = "753345";
 const clientSecret = "c5c685a22e55484bafc32256f124d11b"
 const authURL = "https://go.servicem8.com/oauth/authorize";
-const redirectUri = "https://e4b8-122-105-231-206.ngrok-free.app/callback";
+const redirectUri = "https://a339-122-105-231-72.ngrok-free.app/callback";
 const my_UUID = '1516b609-0860-4921-a15a-2027953c8f3b';
 let access_token, expires_in, refresh_token;
 
@@ -33,6 +34,11 @@ app.get("/auth", (req, res) => {
 });
 
 app.get("/callback", async(req, res) => {
+
+  if(access_token){
+    return res.sendFile(path.join(__dirname, "public", "home.html" ));
+  }
+
   const authorizationCode = req.query.code;
 
   if(!authorizationCode){
@@ -49,7 +55,7 @@ app.get("/callback", async(req, res) => {
     });
 
     ({access_token, expires_in, refresh_token} = response.data);
-    res.send("home.html");
+    res.sendFile(path.join(__dirname, "public", "home.html"));
   }
   catch(error){
     res.send("An error occured!");
@@ -57,7 +63,24 @@ app.get("/callback", async(req, res) => {
 
 });
 
+
+app.get("/submission_form", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "submissionForm.html"));
+});
+
+let arrayOfObjects = [];
+app.post("/submit", (req, res) => {
+  const inputData = req.body.notes;
+    const eachDay = inputData.replace(/\r/g,"").split("\n").filter(line => line.trim() !== "");
+    
+    arrayOfObjects = timeExtractor(eachDay);
+    console.log(arrayOfObjects);
+    res.redirect('/callback');
+});
+
 app.get("/jobs", async(req, res) => {
+  let payMap = timeFormatConverter(arrayOfObjects);
+
   if(!access_token){
     res.send("Access token not available yet");
   }else{
@@ -103,24 +126,73 @@ app.get("/jobs", async(req, res) => {
           labourCharge: "Labour Charge",
           paymentMethod: job.payment_method,
         });
-        console.log(jobsByDate[5]);
       });
-      
-      //helper function to filter the response.data using my uuid.
-      function filterJobsByCompletionId(jobs){
-        const jobsById = jobs.filter(job => {
-          if(!job.completion_date){return false;}
-          const jobDate = job.completion_date.split(" ")[0];
-          return job.completion_actioned_by_uuid === my_UUID;
-        });
-        return jobsById;
-      }
       res.render(path.join(__dirname, "views/invoice.ejs"), {jobs: jobsByDate});
     }catch(error){
       console.error("Error fetching job details:", error.response?.data || error.message);
     }
   }
 });
+
+ //helper function to filter the response.data using my uuid.
+ function filterJobsByCompletionId(jobs){
+  const jobsById = jobs.filter(job => {
+    if(!job.completion_date){return false;}
+    const jobDate = job.completion_date.split(" ")[0];
+    return job.completion_actioned_by_uuid === my_UUID;
+  });
+  return jobsById;
+}
+
+//to convert the original time from the notes to the format of servicem8
+function timeFormatConverter(array){
+  const datePayMap = new Map();
+  array.forEach(day => {
+    let dateArr = day.original.split(" ");
+    let month;
+    switch (dateArr[2]){
+      case "Jan":
+        month = 1;
+        break;
+      case "Feb":
+        month = 2;
+        break;
+      case "Mar":
+        month = 3;
+        break;
+        case "Apr":
+        month = 4;
+        break;
+      case "May":
+        month = 5;
+        break;
+      case "Jun":
+        month = 6;
+        break;
+        case "Jul":
+        month = 7;
+        break;
+      case "Aug":
+        month = 8;
+        break;
+      case "Sep":
+        month = 9;
+        break;
+        case "Oct":
+        month = 10;
+        break;
+      case "Nov":
+        month = 11;
+        break;
+      case "Dec":
+        month = 12;
+        break;
+    }
+    let date = "2025-" + month.toString() + "-" + dateArr[1];
+    datePayMap.set(date, day.pay);
+  });
+  return datePayMap;
+}
 
 app.listen(port, () => {
   console.log(`Your server is running in port ${port}`);

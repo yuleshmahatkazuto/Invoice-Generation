@@ -61,4 +61,4 @@ function timeConverter(timeStr){
   return [hours, mins];
 }
 
-module.exports = {timeExtractor, payCalculator, timeDiffCalculator, timeConverter};
+export {timeExtractor, payCalculator, timeDiffCalculator, timeConverter};
