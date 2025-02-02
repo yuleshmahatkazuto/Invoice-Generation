@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 const clientId = "753345";
 const clientSecret = "c5c685a22e55484bafc32256f124d11b"
 const authURL = "https://go.servicem8.com/oauth/authorize";
-const redirectUri = "https://7115-122-105-230-158.ngrok-free.app/callback";
+const redirectUri = "https://eb8b-122-105-230-232.ngrok-free.app/callback";
 const my_UUID = '1516b609-0860-4921-a15a-2027953c8f3b';
 let access_token, expires_in, refresh_token;
 
@@ -64,7 +64,8 @@ app.get("/callback", async(req, res) => {
 
 });
 
-
+let startDate = "";
+let endDate = "";
 app.get("/submission_form", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "submissionForm.html"));
 });
@@ -78,6 +79,12 @@ app.post("/submit", (req, res) => {
     res.redirect('/callback');
 });
 
+app.post("/getDate", (req, res) => {
+  startDate = req.body.startdate;
+  endDate = req.body.enddate;
+  res.redirect("/callback");
+})
+
 app.get("/jobs", async(req, res) => {
   let payMap = timeFormatConverter(arrayOfObjects);
   console.log(payMap);
@@ -90,7 +97,7 @@ app.get("/jobs", async(req, res) => {
           Authorization: `Bearer ${access_token}`,
         },
         params: {
-          $filter: "completion_date gt '2025-01-19 00:00:00'",
+          $filter: `completion_date gt '${startDate} 00:00:00'`,
         } 
       });
       const companyResponse = await axios.get("https://api.servicem8.com/api_1.0/JobContact.json",{
@@ -104,7 +111,7 @@ app.get("/jobs", async(req, res) => {
         customerName.set(customer.job_uuid, customer.first + " " + customer.last);
       });
 
-      const jobs = jobresponse.data;
+      const jobs = jobresponse.data.filter(job => job.completion_date.split(" ")[0] !== endDate);
       const jobsById = filterJobsByCompletionId(jobs);
       const jobsByDate = [];
       const dateCount = {};

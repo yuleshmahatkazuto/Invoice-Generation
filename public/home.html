@@ -8,6 +8,13 @@
 </head>
 <body>
   <div class="container">
+    <div class="form">
+      <form action="/getDate" method="POST">
+        <input name="startdate" placeholder="Enter the date you want the form generated from in XXXX-MM-DD format">
+        <input name="enddate" placeholder="Enter the end date in same format.">
+        <button type="submit">Submit</button>
+      </form>
+    </div>
     <div class = "button" onclick="window.location.href='/submission_form'">
       Step1: Calculate Pay
     </div>
