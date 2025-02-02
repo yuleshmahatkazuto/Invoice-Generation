@@ -4,8 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Invoice</title>
-  <style>
-    tr, th, td {
+  <style>  
+
+    table {
+      border-collapse: collapse;
+    }
+    td, th{
       border: 1px solid black;
     }
   </style>
@@ -35,9 +39,7 @@
               <td><%= job.customerName %></td>
               <td><%= job.jobAddress %></td>
               <% if(index === 0){ %>
-                <td rowspan="<%= job.rowspan %>"><%= job.labourCharge %></td>
-              <% }else{ %>
-                <td></td>
+                <td rowspan="<%= job.rowSpan %>"><%= job.labourCharge %></td>
               <% } %>
               <td><%= job.paymentMethod %></td>
             </tr>

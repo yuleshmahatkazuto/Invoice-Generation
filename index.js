@@ -55,7 +55,7 @@ app.get("/callback", async(req, res) => {
     });
 
     ({access_token, expires_in, refresh_token} = response.data);
-    console.log(access_token);
+    console.log("Full response.data" + JSON.stringify(response.data));
     res.sendFile(path.join(__dirname, "public", "home.html"));
   }
   catch(error){
@@ -109,8 +109,11 @@ app.get("/jobs", async(req, res) => {
       const jobsByDate = [];
       const dateCount = {};
       jobsById.forEach(job => {
+        const date = job.completion_date.split(" ")[0];  // Extract the date part
+        dateCount[date] = (dateCount[date] || 0) + 1;  // Increment count for this date
+      });
+      jobsById.forEach(job => {
         const date = job.completion_date.split(" ")[0];
-        dateCount[date] = (dateCount[date] || 0) + 1;
         
         const customer_Name = customerName.get(job.uuid) || "";
         let dateEntry = jobsByDate.find(entry => entry.date === date);
@@ -128,6 +131,7 @@ app.get("/jobs", async(req, res) => {
           paymentMethod: job.payment_method,
         });
       });
+      console.log(dateCount);
       res.render(path.join(__dirname, "views/invoice.ejs"), {jobs: jobsByDate});
     }catch(error){
       console.error("Error fetching job details:", error.response?.data || error.message);
