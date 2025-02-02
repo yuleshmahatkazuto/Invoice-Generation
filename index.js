@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 const clientId = "753345";
 const clientSecret = "c5c685a22e55484bafc32256f124d11b"
 const authURL = "https://go.servicem8.com/oauth/authorize";
-const redirectUri = "https://f31d-165-225-115-66.ngrok-free.app/callback";
+const redirectUri = "https://7115-122-105-230-158.ngrok-free.app/callback";
 const my_UUID = '1516b609-0860-4921-a15a-2027953c8f3b';
 let access_token, expires_in, refresh_token;
 
@@ -55,6 +55,7 @@ app.get("/callback", async(req, res) => {
     });
 
     ({access_token, expires_in, refresh_token} = response.data);
+    console.log(access_token);
     res.sendFile(path.join(__dirname, "public", "home.html"));
   }
   catch(error){
@@ -74,7 +75,6 @@ app.post("/submit", (req, res) => {
     const eachDay = inputData.replace(/\r/g,"").split("\n").filter(line => line.trim() !== "");
     
     arrayOfObjects = timeExtractor(eachDay);
-    console.log(arrayOfObjects);
     res.redirect('/callback');
 });
 
@@ -107,18 +107,19 @@ app.get("/jobs", async(req, res) => {
       const jobs = jobresponse.data;
       const jobsById = filterJobsByCompletionId(jobs);
       const jobsByDate = [];
-      
+      const dateCount = {};
       jobsById.forEach(job => {
         const date = job.completion_date.split(" ")[0];
+        dateCount[date] = (dateCount[date] || 0) + 1;
+        
         const customer_Name = customerName.get(job.uuid) || "";
         let dateEntry = jobsByDate.find(entry => entry.date === date);
         if(!dateEntry){
           dateEntry = {date: date, jobs: []};
           jobsByDate.push(dateEntry);
         }
-        console.log(date);
-        console.log(payMap.get(date));
         dateEntry.jobs.push({
+          rowSpan: dateCount[date],
           jobID: job.generated_job_id,
           date: date,
           customerName : customer_Name,

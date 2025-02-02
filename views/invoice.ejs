@@ -26,15 +26,19 @@
           <th>Labour Charge($AUD)</th>
           <th>Payment</th>
         </tr>
-
+        
         <% jobs.forEach(dateEntry => { %>
-          <% dateEntry.jobs.forEach(job => { %>
+          <% dateEntry.jobs.forEach((job, index) => { %>
             <tr>
               <td><%= job.jobID %></td>
               <td><%= job.date %></td>
               <td><%= job.customerName %></td>
               <td><%= job.jobAddress %></td>
-              <td><%= job.labourCharge %></td>
+              <% if(index === 0){ %>
+                <td rowspan="<%= job.rowspan %>"><%= job.labourCharge %></td>
+              <% }else{ %>
+                <td></td>
+              <% } %>
               <td><%= job.paymentMethod %></td>
             </tr>
           <% }); %>
