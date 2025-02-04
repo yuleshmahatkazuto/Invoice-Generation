@@ -7,19 +7,24 @@
   <link rel="stylesheet" href="home.css">
 </head>
 <body>
+  <div class="header">
+    WELCOME TO INVOICE GENERATION SYSTEM
+  </div>
   <div class="container">
     <div class="form">
-      <form action="/getDate" method="POST">
-        <input name="startdate" placeholder="Enter the date you want the form generated from in XXXX-MM-DD format">
-        <input name="enddate" placeholder="Enter the end date in same format.">
+      Step1: Enter the following details
+      <form action="/getDate" method="POST" class="actual_form">
+        <input name="startdate" placeholder="Invoice start date YYYY-MM-DD">
+        <input name="enddate" placeholder="Invoice END date YYYY-MM-DD">
+        <input name="invoiceNo" placeholder="Invoice No.">
         <button type="submit">Submit</button>
       </form>
     </div>
     <div class = "button" onclick="window.location.href='/submission_form'">
-      Step1: Calculate Pay
+      Step2: Calculate Pay
     </div>
     <div class = "button" onclick="window.location.href = '/jobs'">
-      Step2: Get Your Invoice
+      Step3: Get Your Invoice
     </div>
   </div>  
 </body>

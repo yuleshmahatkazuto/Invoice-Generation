@@ -10,17 +10,43 @@
       border-collapse: collapse;
     }
     td, th{
-      border: 1px solid black;
+      border: 1px solid black;      
+      text-align: center;
+    }
+
+    .container{
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .header_container{
+      display: flex;
+      flex-direction: row;
+      align-content: space-between;
     }
   </style>
 </head>
 <body>
-  <% if(locals.jobs){ %>
+  <div class="container">
     <div class="invoice-header">
-      <h1>Invoice Header</h1>
+      <h1>SRM Termite and Pest Control (Invoice)</h1>
     </div>
-
-    <div class="invoice-details">
+    <% if(locals.jobs && locals.invoiceNo){ %>
+    <div class="header_container">      
+      <div class = "left_header">
+        TECHNICIAN NAME:- YULESH RAJ MAHAT <br>
+        ADDRESS:- 220/95 Station Rd, Auburn 2144 <br>
+        Invoice No:- <%= invoiceNo %>
+      </div>
+  
+      <div class = "right-header">
+        ABN:- 26203982841
+      </div>
+      <div class="invoice-details">
+    </div>
+    <div class="form">
       <table>
         <tr>
           <th>Job ID</th>
@@ -44,10 +70,10 @@
               <td><%= job.paymentMethod %></td>
             </tr>
           <% }); %>
-        <% }); %>
-         
+        <% }); %>         
       </table>
     </div>
-  <% } %>
+    <% } %>
+</div>
 </body>
 </html>

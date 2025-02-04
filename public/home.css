@@ -2,11 +2,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 100vh;  
+  justify-content: center; 
+  margin-top: 10vh;
 }
 
-.button{
+.button, .form{
   border: 1px solid black;
   border-radius: 5px;
   padding: 10px;
@@ -17,4 +17,33 @@
   background-color: rgba(0, 0, 0, 0.557);
   border: 2px solid rgba(213, 124, 124, 0.557);
   cursor: pointer;
+}
+
+.form, .actual_form{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.form{
+  height: 150px;
+}
+
+.actual_form{
+  height: 100px;
+}
+.header{
+  font-weight: bolder;
+  font-size: 2rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 12vh;
+}
+
+button:hover{
+  background-color: rgba(0, 0, 0, 0.557);
+  border: 2px solid rgba(213, 124, 124, 0.557);
+  cursor: pointer;
+  border-radius: 5px;
 }
