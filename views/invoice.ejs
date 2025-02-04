@@ -1,79 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Invoice</title>
-  <style>  
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invoice</title>
+    <style>
+      
+      .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        height: 100vh;
+        width: 100%;
+      }
 
-    table {
-      border-collapse: collapse;
-    }
-    td, th{
-      border: 1px solid black;      
-      text-align: center;
-    }
+      .invoice-header{
+        text-align: center;
+        width: 100%;
+      }
 
-    .container{
-      display: flex;
-      align-items: center;
-      flex-direction: column;
-      height: 100vh;
-    }
+      .header_container{
+        display: flex;
+        justify-content: space-between;
+      }
 
-    .header_container{
-      display: flex;
-      flex-direction: row;
-      align-content: space-between;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="invoice-header">
-      <h1>SRM Termite and Pest Control (Invoice)</h1>
-    </div>
-    <% if(locals.jobs && locals.invoiceNo){ %>
-    <div class="header_container">      
-      <div class = "left_header">
-        TECHNICIAN NAME:- YULESH RAJ MAHAT <br>
-        ADDRESS:- 220/95 Station Rd, Auburn 2144 <br>
-        Invoice No:- <%= invoiceNo %>
+      .form{
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+      }
+
+      .header_container, .form {
+        width: 100%;
+        max-width: 800px;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      td,
+      th {
+        border: 1px solid black;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="invoice-header">
+        <h1>SRM Termite and Pest Control (Invoice)</h1>
       </div>
-  
-      <div class = "right-header">
-        ABN:- 26203982841
+      <% if(locals.jobs && locals.invoiceNo){ %>
+      <div class="header_container">
+        <div class="left_header">
+          TECHNICIAN NAME:- YULESH RAJ MAHAT <br />
+          ADDRESS:- 220/95 Station Rd, Auburn 2144 <br />
+          Invoice No:- <%= invoiceNo %>
+        </div>
+
+        <div class="right-header">ABN:- 26203982841</div>
       </div>
-      <div class="invoice-details">
+      <div class="form">
+        <table>
+          <tr>
+            <th>Job ID</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Job Address</th>
+            <th>Labour Charge($AUD)</th>
+            <th>Payment</th>
+          </tr>
+
+          <% jobs.forEach(dateEntry => { %> <% dateEntry.jobs.forEach((job,
+          index) => { %>
+          <tr>
+            <td><%= job.jobID %></td>
+            <td><%= job.date %></td>
+            <td><%= job.customerName %></td>
+            <td><%= job.jobAddress %></td>
+            <% if(index === 0){ %>
+            <td rowspan="<%= job.rowSpan %>"><%= job.labourCharge %></td>
+            <% } %>
+            <td><%= job.paymentMethod %></td>
+          </tr>
+          <% }); %> <% }); %>
+        </table>
+      </div>
+      <% } %>
     </div>
-    <div class="form">
-      <table>
-        <tr>
-          <th>Job ID</th>
-          <th>Date</th>
-          <th>Customer</th>
-          <th>Job Address</th>
-          <th>Labour Charge($AUD)</th>
-          <th>Payment</th>
-        </tr>
-        
-        <% jobs.forEach(dateEntry => { %>
-          <% dateEntry.jobs.forEach((job, index) => { %>
-            <tr>
-              <td><%= job.jobID %></td>
-              <td><%= job.date %></td>
-              <td><%= job.customerName %></td>
-              <td><%= job.jobAddress %></td>
-              <% if(index === 0){ %>
-                <td rowspan="<%= job.rowSpan %>"><%= job.labourCharge %></td>
-              <% } %>
-              <td><%= job.paymentMethod %></td>
-            </tr>
-          <% }); %>
-        <% }); %>         
-      </table>
-    </div>
-    <% } %>
-</div>
-</body>
+  </body>
 </html>
