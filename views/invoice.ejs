@@ -13,6 +13,7 @@
         flex-direction: column;
         height: 100vh;
         width: 100%;
+        font-size: 18px;
       }
 
       .invoice-header{
@@ -31,7 +32,7 @@
         margin-top: 10px;
       }
 
-      .header_container, .form {
+      .header_container, .form, .payment-details {
         width: 100%;
         max-width: 800px;
       }
@@ -44,6 +45,10 @@
       th {
         border: 1px solid black;
         text-align: center;
+      }
+
+      .payment-details{
+        margin-top: 10px;
       }
     </style>
   </head>
@@ -86,9 +91,29 @@
             <td><%= job.paymentMethod %></td>
           </tr>
           <% }); %> <% }); %>
+          <tr>
+            <Td colspan="4">Total Labour Cost:-</Td>
+            <td>$<%= locals.totalPay %></td>
+            <td rowspan="2"></td>
+          </tr>
+          <tr>
+            <td colspan="4">Total:-<%= totalPay %></td>
+            <td></td>
+          </tr>
         </table>
       </div>
       <% } %>
+      <div class="payment-details">
+        Total Amount to be paid:- <strong>$<%= totalPay %></strong><br>
+        BANK DETAILS<br>
+        BANK NAME:- ANZ Bank<br>
+        BSB:- 012215<br>
+        A/C NUMBER: 320951841<br>
+        A/C NAME: YULESH MAHAT<br>
+        OR<br>
+        PAY ID: 01451545169<br>
+      </div>
+
     </div>
   </body>
 </html>

@@ -14,7 +14,7 @@ function timeExtractor(array) {
       if (secondHalf.split(" ").length === 3) {
         jobType = "barrier";
       }
-      const pay = payCalculator(startTime, endTime, jobType);
+      const pay = parseFloat(payCalculator(startTime, endTime, jobType));
       return { original: item, pay };
     }
   });

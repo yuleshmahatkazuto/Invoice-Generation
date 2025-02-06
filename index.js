@@ -18,7 +18,7 @@ const __dirname = path.dirname(__filename);
 const clientId = "753345";
 const clientSecret = "c5c685a22e55484bafc32256f124d11b";
 const authURL = "https://go.servicem8.com/oauth/authorize";
-const redirectUri = "https://b2c1-122-105-231-96.ngrok-free.app/callback";
+const redirectUri = "https://21f4-122-105-204-91.ngrok-free.app/callback";
 const my_UUID = "1516b609-0860-4921-a15a-2027953c8f3b";
 let access_token, expires_in, refresh_token;
 
@@ -92,7 +92,7 @@ app.post("/getDate", (req, res) => {
 });
 
 app.get("/jobs", async (req, res) => {
-  let payMap = timeFormatConverter(arrayOfObjects);
+  let [payMap, totalPay] = timeFormatConverter(arrayOfObjects);
   if (!access_token) {
     res.send("Access token not available yet");
   } else {
@@ -157,6 +157,7 @@ app.get("/jobs", async (req, res) => {
       res.render(path.join(__dirname, "views/invoice.ejs"), {
         jobs: jobsByDate,
         invoiceNo: invoiceNo,
+        totalPay: totalPay
       });
     } catch (error) {
       console.error(
@@ -187,55 +188,19 @@ function timeFormatConverter(array) {
     Jul: "07", Aug: "08", Sep: "09", Oct: "10", Nov: "11", Dec: "12"
   };
   
+  let totalPay = 0;
   array.forEach((day) => {
     let dateArr = day.original.split(" ");
-    let month;
-    switch (dateArr[2]) {
-      case "Jan":
-        month = 1;
-        break;
-      case "Feb":
-        month = 2;
-        break;
-      case "Mar":
-        month = 3;
-        break;
-      case "Apr":
-        month = 4;
-        break;
-      case "May":
-        month = 5;
-        break;
-      case "Jun":
-        month = 6;
-        break;
-      case "Jul":
-        month = 7;
-        break;
-      case "Aug":
-        month = 8;
-        break;
-      case "Sep":
-        month = 9;
-        break;
-      case "Oct":
-        month = 10;
-        break;
-      case "Nov":
-        month = 11;
-        break;
-      case "Dec":
-        month = 12;
-        break;
-    }
-    let date = "2025-" + month.toString().padStart(2, "0") + "-" + dateArr[1].padStart(2,"0");
+    let month = monthMap[dateArr[2]];
+    let date = "2025-" + month.toString() + "-" + dateArr[1].padStart(2,"0");
     if(datePayMap.has(date)){
-      datePayMap.set(date, (parseFloat(datePayMap.get(date)) + parseFloat(day.pay)));
+      datePayMap.set(date, datePayMap.get(date) + day.pay);
     }else{
       datePayMap.set(date, day.pay);
-    }    
+    }   
+    totalPay += day.pay; 
   });
-  return datePayMap;
+  return [datePayMap, totalPay];
 }
 
 app.listen(port, () => {
