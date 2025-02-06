@@ -18,7 +18,7 @@ const __dirname = path.dirname(__filename);
 const clientId = "753345";
 const clientSecret = "c5c685a22e55484bafc32256f124d11b";
 const authURL = "https://go.servicem8.com/oauth/authorize";
-const redirectUri = "https://0c93-122-105-228-74.ngrok-free.app/callback";
+const redirectUri = "https://08c1-122-105-228-174.ngrok-free.app/callback";
 const my_UUID = "1516b609-0860-4921-a15a-2027953c8f3b";
 let access_token, expires_in, refresh_token;
 
@@ -226,8 +226,9 @@ function timeFormatConverter(array) {
     let date = "2025-" + month.toString().padStart(2, "0") + "-" + dateArr[1];
     if(datePayMap.has(date)){
       datePayMap.set(date, datePayMap.get(date) + day.pay)
-    }
-    datePayMap.set(date, day.pay);
+    }else{
+      datePayMap.set(date, day.pay);
+    }    
   });
   return datePayMap;
 }
