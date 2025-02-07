@@ -212,8 +212,14 @@ app.listen(port,() => {
 async function generatePDF(){
   try{
     const browser = await puppeteer.launch({
-      headless: true, 
-      args: ['--no-sandbox', '--disable-web-security']
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-web-security',
+        '--disable-features=IsolateOrigins,site-per-process'
+      ],
+      executablePath: '/usr/bin/google-chrome-stable' // Path to Chromium on Render
     });
     const page = await browser.newPage();
     await page.goto("https://invoice-generation-uykq.onrender.com//jobs", {waitUntil: "networkidle0"});
@@ -224,6 +230,7 @@ async function generatePDF(){
       printBackground: true
     });
     console.log("Invoice generation successful");
+    await browser.close();
 
   }catch(error){
     console.error("error during PDF generation", error);
