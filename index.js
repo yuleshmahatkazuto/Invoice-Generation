@@ -12,14 +12,14 @@ import {
 import puppeteer from 'puppeteer';
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const clientId = "753345";
 const clientSecret = "c5c685a22e55484bafc32256f124d11b";
 const authURL = "https://go.servicem8.com/oauth/authorize";
-const redirectUri = "https://ab1d-122-105-207-177.ngrok-free.app/callback";
+const redirectUri = "https://invoice-generation-uykq.onrender.com/callback";
 const my_UUID = "1516b609-0860-4921-a15a-2027953c8f3b";
 let access_token, expires_in, refresh_token;
 
@@ -212,11 +212,11 @@ app.listen(port,() => {
 async function generatePDF(){
   try{
     const browser = await puppeteer.launch({
-      headless: false, 
+      headless: true, 
       args: ['--no-sandbox', '--disable-web-security']
     });
     const page = await browser.newPage();
-    await page.goto("https://ab1d-122-105-207-177.ngrok-free.app/jobs", {waitUntil: "networkidle0"});
+    await page.goto("https://invoice-generation-uykq.onrender.com//jobs", {waitUntil: "networkidle0"});
     await page.waitForSelector(".form");
     await page.pdf({
       path: 'invoice.pdf',
