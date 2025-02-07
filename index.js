@@ -9,6 +9,7 @@ import {
   timeDiffCalculator,
   timeConverter,
 } from "./payCalculator.js";
+import puppeteer from 'puppeteer';
 
 const app = express();
 const port = 3000;
@@ -18,7 +19,7 @@ const __dirname = path.dirname(__filename);
 const clientId = "753345";
 const clientSecret = "c5c685a22e55484bafc32256f124d11b";
 const authURL = "https://go.servicem8.com/oauth/authorize";
-const redirectUri = "https://21f4-122-105-204-91.ngrok-free.app/callback";
+const redirectUri = "https://ab1d-122-105-207-177.ngrok-free.app/callback";
 const my_UUID = "1516b609-0860-4921-a15a-2027953c8f3b";
 let access_token, expires_in, refresh_token;
 
@@ -159,6 +160,7 @@ app.get("/jobs", async (req, res) => {
         invoiceNo: invoiceNo,
         totalPay: totalPay
       });
+      await generatePDF();
     } catch (error) {
       console.error(
         "Error fetching job details:",
@@ -203,6 +205,27 @@ function timeFormatConverter(array) {
   return [datePayMap, totalPay];
 }
 
-app.listen(port, () => {
-  console.log(`Your server is running in port ${port}`);
+app.listen(port,() => {
+  console.log(`Server running on http://localhost:${port}`);
 });
+
+async function generatePDF(){
+  try{
+    const browser = await puppeteer.launch({
+      headless: false, 
+      args: ['--no-sandbox', '--disable-web-security']
+    });
+    const page = await browser.newPage();
+    await page.goto("https://ab1d-122-105-207-177.ngrok-free.app/jobs", {waitUntil: "networkidle0"});
+    await page.waitForSelector(".form");
+    await page.pdf({
+      path: 'invoice.pdf',
+      format: 'A4',
+      printBackground: true
+    });
+    console.log("Invoice generation successful");
+
+  }catch(error){
+    console.error("error during PDF generation", error);
+  }
+}
