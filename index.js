@@ -212,12 +212,11 @@ app.listen(port,() => {
 async function generatePDF(){
   try{
     const browser = await puppeteer.launch({
+      executablePath: '/usr/bin/chromium',
       headless: true,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
-        '--disable-web-security',
-        '--disable-features=IsolateOrigins,site-per-process'
       ],
       executablePath: '/usr/bin/google-chrome-stable' // Path to Chromium on Render
     });
