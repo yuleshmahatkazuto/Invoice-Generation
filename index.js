@@ -212,13 +212,11 @@ app.listen(port,() => {
 async function generatePDF(){
   try{
     const browser = await puppeteer.launch({
-      executablePath: '/usr/bin/chromium',
       headless: true,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
       ],
-      executablePath: '/usr/bin/google-chrome-stable' // Path to Chromium on Render
     });
     const page = await browser.newPage();
     await page.goto("https://invoice-generation-uykq.onrender.com//jobs", {waitUntil: "networkidle0"});
