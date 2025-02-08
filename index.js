@@ -219,7 +219,7 @@ async function generatePDF(){
       ],
     });
     const page = await browser.newPage();
-    await page.goto("https://invoice-generation-uykq.onrender.com//jobs", {waitUntil: "networkidle0"});
+    await page.goto("https://invoice-generation-uykq.onrender.com/jobs", {waitUntil: "networkidle0"});
     await page.waitForSelector(".form");
     await page.pdf({
       path: 'invoice.pdf',
