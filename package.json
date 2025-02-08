@@ -1,47 +1,21 @@
 {
-  
   "name": "invoice-generation-alpha",
-  
   "version": "1.0.0",
-  
   "main": "index.js",
-  
   "type": "module",
-  
   "scripts": {
-  
-    
-  "test": "echo \"Error: no test specified\" && exit 1",
-  
-    
-  "start": "node index.js"
-  
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
-  
   "keywords": [],
-  
   "author": "",
-  
   "license": "ISC",
-  
   "description": "",
-  
   "dependencies": {
-  
-    
-  "axios": "^1.7.9",
-  
-    
-  "body-parser": "^1.20.3",
-  
-    
-  "ejs": "^3.1.10",
-  
-    
-  "express": "^4.21.2",
-  
-    
-  "puppeteer": "^24.2.0"
-  
+    "axios": "^1.7.9",
+    "body-parser": "^1.20.3",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "puppeteer": "^24.2.0"
   }
 }
