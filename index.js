@@ -216,10 +216,7 @@ async function generatePDF(){
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
-        '--disable-web-security',
-        '--disable-features=IsolateOrigins,site-per-process'
       ],
-      executablePath: '/usr/bin/google-chrome-stable' // Path to Chromium on Render
     });
     const page = await browser.newPage();
     await page.goto("https://invoice-generation-uykq.onrender.com//jobs", {waitUntil: "networkidle0"});
