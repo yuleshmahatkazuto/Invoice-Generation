@@ -10,6 +10,7 @@ import {
   timeConverter,
 } from "./payCalculator.js";
 import puppeteer from 'puppeteer';
+import fs from 'fs';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -160,8 +161,8 @@ app.get("/jobs", async (req, res) => {
         invoiceNo: invoiceNo,
         totalPay: totalPay
       };
-      const generatePDF = req.query.pdf === 'true';
-      if(generatePDF){
+      const queryParam = req.query.pdf === 'true';
+      if(queryParam){
         try{
           const pdfBuffer = await generatePDF(ejsData);
           res.contentType('application/pdf');
@@ -171,6 +172,7 @@ app.get("/jobs", async (req, res) => {
           console.error("Error occured during pdf generation", error);
         }
       }else{
+        console.log("Else part was triggered!");
         res.render(path.join(__dirname, "views/invoice.ejs"), ejsData);
       }
     } catch (error) {
@@ -190,6 +192,7 @@ async function generatePDF(ejsData){
         '--no-sandbox',
         '--disable-setuid-sandbox',
       ],
+      executablePath: process.env.CHROMIUM_BIN || '/usr/bin/chromium-browser', 
     });
     const page = await browser.newPage();
     const html = ejs.render(fs.readFileSync('./views/invoice.ejs','utf8'), ejsData);
