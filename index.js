@@ -19,7 +19,7 @@ const __dirname = path.dirname(__filename);
 const clientId = "753345";
 const clientSecret = "c5c685a22e55484bafc32256f124d11b";
 const authURL = "https://go.servicem8.com/oauth/authorize";
-const redirectUri = "https://invoice-generation-uykq.onrender.com/callback";
+const redirectUri = "https://invoice-generation-system.onrender.com/callback";
 const my_UUID = "1516b609-0860-4921-a15a-2027953c8f3b";
 let access_token, expires_in, refresh_token;
 
@@ -160,7 +160,10 @@ app.get("/jobs", async (req, res) => {
         invoiceNo: invoiceNo,
         totalPay: totalPay
       });
-      await generatePDF();
+      const pdf = await generatePDF();
+      res.contentType('application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="invoice.pdf"');
+      res.send(pdf);
     } catch (error) {
       console.error(
         "Error fetching job details:",
@@ -217,18 +220,17 @@ async function generatePDF(){
         '--no-sandbox',
         '--disable-setuid-sandbox',
       ],
-      executablePath: process.env.
     });
     const page = await browser.newPage();
-    await page.goto("https://invoice-generation-uykq.onrender.com/jobs", {waitUntil: "networkidle0"});
-    await page.waitForSelector(".form");
-    await page.pdf({
-      path: 'invoice.pdf',
+    await page.goto("https://invoice-generation-system.onrender.com/jobs?pdf=true", {waitUntil: "networkidle2"});
+    await page.waitForSelector(".form", {timeout: 10000});
+    const pdfBuffer = await page.pdf({
       format: 'A4',
       printBackground: true
     });
     console.log("Invoice generation successful");
     await browser.close();
+    return pdfBuffer;
 
   }catch(error){
     console.error("error during PDF generation", error);
