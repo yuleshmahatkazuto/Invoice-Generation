@@ -155,15 +155,24 @@ app.get("/jobs", async (req, res) => {
           paymentMethod: job.payment_method,
         });
       });
-      res.render(path.join(__dirname, "views/invoice.ejs"), {
+      const ejsData = {
         jobs: jobsByDate,
         invoiceNo: invoiceNo,
         totalPay: totalPay
-      });
-      const pdf = await generatePDF();
-      res.contentType('application/pdf');
-      res.setHeader('Content-Disposition', 'attachment; filename="invoice.pdf"');
-      res.send(pdf);
+      };
+      const generatePDF = req.query.pdf === 'true';
+      if(generatePDF){
+        try{
+          const pdfBuffer = await generatePDF(ejsData);
+          res.contentType('application/pdf');
+          res.setHeader('Content-Disposition', 'attachment; filename="invoice.pdf"');
+          res.send(pdfBuffer);
+        }catch(error){
+          console.error("Error occured during pdf generation", error);
+        }
+      }else{
+        res.render(path.join(__dirname, "views/invoice.ejs"), ejsData);
+      }
     } catch (error) {
       console.error(
         "Error fetching job details:",
@@ -172,6 +181,33 @@ app.get("/jobs", async (req, res) => {
     }
   }
 });
+
+async function generatePDF(ejsData){
+  try{
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+      ],
+    });
+    const page = await browser.newPage();
+    const html = ejs.render(fs.readFileSync('./views/invoice.ejs','utf8'), ejsData);
+    await page.setContent(html);
+    await page.waitForSelector(".form", {timeout: 10000});
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      printBackground: true
+    });
+    console.log("Invoice generation successful");
+    await browser.close();
+    return pdfBuffer;
+
+  }catch(error){
+    console.error("error during PDF conversion", error);
+  }
+}
+
 
 //helper function to filter the response.data using my uuid.
 function filterJobsByCompletionId(jobs) {
@@ -212,27 +248,3 @@ app.listen(port,() => {
   console.log(`Server running on http://localhost:${port}`);
 });
 
-async function generatePDF(){
-  try{
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-      ],
-    });
-    const page = await browser.newPage();
-    await page.goto("https://invoice-generation-system.onrender.com/jobs?pdf=true", {waitUntil: "networkidle2"});
-    await page.waitForSelector(".form", {timeout: 10000});
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      printBackground: true
-    });
-    console.log("Invoice generation successful");
-    await browser.close();
-    return pdfBuffer;
-
-  }catch(error){
-    console.error("error during PDF generation", error);
-  }
-}
