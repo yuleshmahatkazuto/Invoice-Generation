@@ -170,7 +170,7 @@ app.get("/jobs", async (req, res) => {
         invoiceNo: invoiceNo,
         totalPay: totalPay
       };
-      const html = ejs.render(path.join(__dirname, "views", "invoice.ejs"), ejsData);
+      const html = ejs.render(path.join(__dirname, "views/invoice.ejs"), ejsData);
       const queryParam = req.query.pdf === 'true';
       if(queryParam){
         try{
@@ -183,7 +183,7 @@ app.get("/jobs", async (req, res) => {
         }
       }else{
         console.log("Else part was triggered!");
-        res.render(path.join(__dirname, "views/invoice.ejs"), ejsData);
+        res.send(html);
       }
     } catch (error) {
       console.error(
