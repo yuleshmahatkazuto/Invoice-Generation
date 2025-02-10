@@ -10,7 +10,7 @@ import {
   timeConverter,
 } from "./payCalculator.js";
 import 'dotenv/config';
-import fs from 'fs';
+import fs from 'fs/promises';
 import ejs from 'ejs';
 
 const app = express();
