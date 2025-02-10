@@ -218,7 +218,7 @@ async function generatePDF(html){ // Takes HTML as input
     });
 
     // Write the PDF to a file (or send it in the response)
-    await fs.writeFile("invoice.pdf", Buffer.from(response.data)); // Use your desired filename
+    await fs.writeFile(`invoice ${invoiceNo}.pdf`, Buffer.from(response.data)); // Use your desired filename
     console.log("PDF saved as invoice.pdf");
     return Buffer.from(response.data); // Return the buffer, so you can send it in the response
   } catch (error) {
