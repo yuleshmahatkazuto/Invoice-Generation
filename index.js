@@ -170,7 +170,8 @@ app.get("/jobs", async (req, res) => {
         invoiceNo: invoiceNo,
         totalPay: totalPay
       };
-      const html = ejs.render(path.join(__dirname, "views/invoice.ejs"), ejsData);
+      const ejsTemplate = await fs.readFile(path.join(__dirname, "views/invoice.ejs"), 'utf-8');
+      const html = ejs.render(ejsTemplate, ejsData);
       const queryParam = req.query.pdf === 'true';
       if(queryParam){
         try{
