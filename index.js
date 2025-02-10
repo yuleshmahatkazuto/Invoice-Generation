@@ -217,7 +217,6 @@ async function generatePDF(){
         '--no-sandbox',
         '--disable-setuid-sandbox',
       ],
-      executablePath: process.env.
     });
     const page = await browser.newPage();
     await page.goto("https://invoice-generation-uykq.onrender.com/jobs", {waitUntil: "networkidle0"});
