@@ -11,6 +11,7 @@ import {
 } from "./payCalculator.js";
 import puppeteer from 'puppeteer';
 import fs from 'fs';
+import ejs from 'ejs';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -161,10 +162,11 @@ app.get("/jobs", async (req, res) => {
         invoiceNo: invoiceNo,
         totalPay: totalPay
       };
+      const html = ejs.render(fs.readFileSync(path.join(__dirname, "views", "invoice.ejs"),'utf8'), ejsData);
       const queryParam = req.query.pdf === 'true';
       if(queryParam){
         try{
-          const pdfBuffer = await generatePDF(ejsData);
+          const pdfBuffer = await generatePDF(ejsData, html);
           res.contentType('application/pdf');
           res.setHeader('Content-Disposition', 'attachment; filename="invoice.pdf"');
           res.send(pdfBuffer);
@@ -184,7 +186,7 @@ app.get("/jobs", async (req, res) => {
   }
 });
 
-async function generatePDF(ejsData){
+async function generatePDF(ejsData, html){
   try{
     const browser = await puppeteer.launch({
       headless: true,
@@ -193,9 +195,9 @@ async function generatePDF(ejsData){
         '--disable-setuid-sandbox',
       ],
       executablePath: process.env.CHROMIUM_BIN || '/usr/bin/chromium-browser', 
+      protocolTimeout: 60000,
     });
     const page = await browser.newPage();
-    const html = ejs.render(fs.readFileSync('./views/invoice.ejs','utf8'), ejsData);
     await page.setContent(html);
     await page.waitForSelector(".form", {timeout: 10000});
     const pdfBuffer = await page.pdf({
