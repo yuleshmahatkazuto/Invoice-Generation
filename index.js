@@ -177,7 +177,7 @@ app.get("/jobs", async (req, res) => {
         try{
           const pdfBuffer = await generatePDF(html);
           res.contentType('application/pdf');
-          res.setHeader('Content-Disposition', 'attachment; filename="invoice.pdf"');
+          res.setHeader('Content-Disposition', `attachment; filename="invoice ${invoiceNo}.pdf"`);
           res.send(pdfBuffer);
         }catch(error){
           console.error("Error occured during pdf generation", error);
@@ -216,10 +216,6 @@ async function generatePDF(html){ // Takes HTML as input
       headers: headers_browserless,
       responseType: 'arraybuffer' // Crucial: Get response as buffer
     });
-
-    // Write the PDF to a file (or send it in the response)
-    await fs.writeFile(`invoice ${invoiceNo}.pdf`, Buffer.from(response.data)); // Use your desired filename
-    console.log("PDF saved as invoice.pdf");
     return Buffer.from(response.data); // Return the buffer, so you can send it in the response
   } catch (error) {
     console.error("Error generating PDF:", error);
