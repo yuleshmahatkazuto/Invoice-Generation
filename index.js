@@ -9,7 +9,7 @@ import {
   timeDiffCalculator,
   timeConverter,
 } from "./payCalculator.js";
-import puppeteer from 'puppeteer';
+import 'dotenv/config';
 import fs from 'fs';
 import ejs from 'ejs';
 
@@ -21,8 +21,9 @@ const __dirname = path.dirname(__filename);
 const clientId = "753345";
 const clientSecret = "c5c685a22e55484bafc32256f124d11b";
 const authURL = "https://go.servicem8.com/oauth/authorize";
-const redirectUri = "https://invoice-generation-system.onrender.com/callback";
+const redirectUri = "https://invoice-generation-uykq.onrender.com/callback";
 const my_UUID = "1516b609-0860-4921-a15a-2027953c8f3b";
+const BROWSERLESS_API = process.env.BROWSERLESS_API;
 let access_token, expires_in, refresh_token;
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -94,6 +95,13 @@ app.post("/getDate", (req, res) => {
   res.redirect("/home");
 });
 
+const url_browserless = `https://production-sfo.browserless.io/pdf?token=${BROWSERLESS_API_KEY}`;
+  const headers_browserless = {
+    "Cache-Control": "no-cache",
+    "Content-Type": "application/json"
+  };
+
+
 app.get("/jobs", async (req, res) => {
   let [payMap, totalPay] = timeFormatConverter(arrayOfObjects);
   if (!access_token) {
@@ -162,11 +170,11 @@ app.get("/jobs", async (req, res) => {
         invoiceNo: invoiceNo,
         totalPay: totalPay
       };
-      const html = ejs.render(fs.readFileSync(path.join(__dirname, "views", "invoice.ejs"),'utf8'), ejsData);
+      const html = ejs.render(path.join(__dirname, "views", "invoice.ejs"), ejsData);
       const queryParam = req.query.pdf === 'true';
       if(queryParam){
         try{
-          const pdfBuffer = await generatePDF(ejsData, html);
+          const pdfBuffer = await generatePDF(html);
           res.contentType('application/pdf');
           res.setHeader('Content-Disposition', 'attachment; filename="invoice.pdf"');
           res.send(pdfBuffer);
@@ -186,30 +194,38 @@ app.get("/jobs", async (req, res) => {
   }
 });
 
-async function generatePDF(ejsData, html){
-  try{
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-      ],
-      executablePath: process.env.CHROMIUM_BIN || '/usr/bin/chromium-browser', 
-      protocolTimeout: 60000,
-    });
-    const page = await browser.newPage();
-    await page.setContent(html);
-    await page.waitForSelector(".form", {timeout: 10000});
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      printBackground: true
-    });
-    console.log("Invoice generation successful");
-    await browser.close();
-    return pdfBuffer;
+async function generatePDF(html){ // Takes HTML as input
+  const data = {
+    html: html, // Use HTML content directly
+    options: {
+      displayHeaderFooter: true,
+      printBackground: true, // Set to true if you want background printed
+      format: "A4", // Set to your desired format
+      margin: {  // Example margin settings
+        top: '20px',
+        bottom: '20px',
+        left: '20px',
+        right: '20px'
+      }
+    }
+  };
 
-  }catch(error){
-    console.error("error during PDF conversion", error);
+  try {
+    const response = await axios.post(url_browserless, data, {
+      headers: headers_browserless,
+      responseType: 'arraybuffer' // Crucial: Get response as buffer
+    });
+
+    // Write the PDF to a file (or send it in the response)
+    await fs.writeFile("invoice.pdf", Buffer.from(response.data)); // Use your desired filename
+    console.log("PDF saved as invoice.pdf");
+    return Buffer.from(response.data); // Return the buffer, so you can send it in the response
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    if (error.response) {
+      console.error("Browserless Response:", error.response.data); // Log the detailed error from Browserless
+    }
+    throw error; // Re-throw the error to be handled by the caller
   }
 }
 
@@ -252,4 +268,3 @@ function timeFormatConverter(array) {
 app.listen(port,() => {
   console.log(`Server running on http://localhost:${port}`);
 });
-
