@@ -23,7 +23,7 @@ const clientSecret = "c5c685a22e55484bafc32256f124d11b";
 const authURL = "https://go.servicem8.com/oauth/authorize";
 const redirectUri = "https://invoice-generation-uykq.onrender.com/callback";
 const my_UUID = "1516b609-0860-4921-a15a-2027953c8f3b";
-const BROWSERLESS_API = process.env.BROWSERLESS_API;
+const BROWSERLESS_API_KEY = process.env.BROWSERLESS_API;
 let access_token, expires_in, refresh_token;
 
 app.use(bodyParser.urlencoded({ extended: true }));
