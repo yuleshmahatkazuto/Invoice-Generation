@@ -6,6 +6,17 @@
     <title>Invoice</title>
     <style>
       
+      @page {
+        size: A4;
+        margin: 20mm;
+      }
+
+      @media print{
+        body{
+          font-size: 12pt;
+        }
+      }
+
       .container {
         display: flex;
         align-items: center;
