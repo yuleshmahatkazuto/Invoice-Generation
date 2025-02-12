@@ -19,6 +19,8 @@ Features
 
         Generate and view/download the invoice.
 
+Web-App site: https://invoice-generation-uykq.onrender.com
+
 Technologies Used
 
     Backend: Node.js, Express.js
@@ -55,35 +57,6 @@ Challenges Faced
 
     PDF Formatting: Fine-tuning the PDF layout and formatting required additional adjustments using an external PDF editor.
 
-Installation and Setup
-
-    Clone the Repository:
-    bash
-    Copy
-
-    git clone https://github.com/your-username/invoice-generation-app.git
-    cd invoice-generation-app
-
-    Install Dependencies:
-    bash
-    Copy
-
-    npm install
-
-    Set Up Environment Variables:
-    Create a .env file in the root directory and add the following:
-    Copy
-
-    SERVICEM8_API_KEY=your_servicem8_api_key
-    BROWSERLESS_API_KEY=your_browserless_api_key
-
-    Run the App:
-    bash
-    Copy
-
-    npm start
-
-    The app will be running at http://localhost:3000.
 
 Usage
 
@@ -105,6 +78,12 @@ Usage
 Future Improvements
 
     Add support for multiple invoice templates.
+
+    Implement the feature to use user-defined payrate for different scenarios.
+
+    Add the feature to enable editing the invoice after viewing. 
+
+    Work on making secure .env files for API keys and other important variables. 
 
     Implement user authentication for secure access.
 
